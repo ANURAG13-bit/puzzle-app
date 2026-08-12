@@ -1,0 +1,1387 @@
+/* =========================================================
+   CLICK N SLIDE
+   style.css
+========================================================= */
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #808080;
+    color: #333;
+}
+
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.game-wrapper {
+    width: min(1500px, 96vw);
+    min-height: 96vh;
+    margin: 2vh auto;
+
+    background: #073b6d;
+
+    border: 3px solid #286b9f;
+
+    position: relative;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.45);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.game-header {
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 28px;
+
+    background: #073b6d;
+
+    border-bottom: 3px solid #1e6092;
+}
+
+
+.brand {
+    color: #65c3f2;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    text-transform: lowercase;
+}
+
+
+.header-right {
+    color: #5eb9ea;
+
+    border: 2px solid #004b80;
+
+    border-radius: 20px;
+
+    padding: 7px 28px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    background: #063665;
+}
+
+
+/* =========================================================
+   MAIN GAME CONTAINER
+========================================================= */
+
+.game-container {
+    display: grid;
+
+    grid-template-columns:
+        minmax(330px, 430px)
+        minmax(500px, 1fr);
+
+    gap: 25px;
+
+    padding: 30px;
+
+    background: #073b6d;
+}
+
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
+
+.left-panel {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+.preview-container {
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+
+.preview-frame {
+    width: 100%;
+
+    max-width: 400px;
+
+    aspect-ratio: 1 / 0.8;
+
+    padding: 9px;
+
+    background: #252500;
+
+    border: 4px solid #555500;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 0 #181800,
+        inset 0 0 0 2px #9c9c00;
+
+    overflow: hidden;
+}
+
+
+.preview-frame img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    border: 2px solid #c6c600;
+
+    border-radius: 5px;
+
+    background: #303030;
+}
+
+
+/* =========================================================
+   IMAGE NAVIGATION
+========================================================= */
+
+.image-controls {
+    width: 100%;
+
+    max-width: 410px;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1.2fr
+        1fr;
+
+    gap: 7px;
+
+    align-items: center;
+}
+
+
+.image-controls button {
+    height: 48px;
+
+    border: 2px solid #555500;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        transform 0.1s;
+
+    font-size: 16px;
+}
+
+
+.nav-button {
+    background: #c8c800;
+
+    color: #5d5d00;
+
+    position: relative;
+}
+
+
+.prev-button {
+    clip-path: polygon(
+        0 50%,
+        18% 0,
+        100% 0,
+        100% 100%,
+        18% 100%
+    );
+
+    padding-left: 12px;
+}
+
+
+.next-button {
+    clip-path: polygon(
+        0 0,
+        82% 0,
+        100% 50%,
+        82% 100%,
+        0 100%
+    );
+
+    padding-right: 12px;
+}
+
+
+.play-button {
+    background: #d5d500;
+
+    color: #626200;
+
+    font-size: 20px !important;
+
+    border-radius: 3px;
+
+    box-shadow:
+        0 4px 0 #6a6a00;
+}
+
+
+.image-controls button:hover {
+    background: #eeee27;
+}
+
+
+.image-controls button:active {
+    transform: translateY(3px);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   SETTINGS PANEL
+========================================================= */
+
+.settings-panel {
+    width: 100%;
+
+    max-width: 410px;
+
+    min-height: 205px;
+
+    display: grid;
+
+    grid-template-columns:
+        125px
+        1fr;
+
+    background: #a2a200;
+
+    border: 3px solid #d1d100;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 0 #525200;
+}
+
+
+/* =========================================================
+   SIZE TITLE
+========================================================= */
+
+.settings-title {
+    grid-column: 1;
+
+    grid-row: 1;
+
+    height: 40px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: #666600;
+
+    color: #ffffd0;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    border-bottom: 2px solid #a8a800;
+}
+
+
+/* =========================================================
+   SIZE OPTIONS
+========================================================= */
+
+.size-options {
+    grid-column: 1;
+
+    grid-row: 2;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: #929200;
+}
+
+
+.size-option {
+    min-height: 39px;
+
+    border: none;
+
+    border-bottom: 1px solid #a9a900;
+
+    background: #929200;
+
+    color: #ffffb5;
+
+    font-size: 19px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+
+.size-option:hover {
+    background: #b9b900;
+
+    color: #ffffdf;
+}
+
+
+.size-option.active {
+    background: #f5f5c8;
+
+    color: #676700;
+
+    box-shadow:
+        inset 4px 0 0 #d0d000;
+}
+
+
+/* =========================================================
+   GAME INFORMATION
+========================================================= */
+
+.game-information {
+    grid-column: 2;
+
+    grid-row: 1 / span 2;
+
+    padding: 12px 18px;
+
+    background: #a7a700;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+}
+
+
+/* =========================================================
+   HELP BUTTON
+========================================================= */
+
+.help-button {
+    width: 145px;
+
+    height: 38px;
+
+    margin-bottom: 5px;
+
+    border: 2px solid #696900;
+
+    border-radius: 7px;
+
+    background: #b7b700;
+
+    color: #dddd65;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 0 #6a6a00;
+}
+
+
+.help-button:hover {
+    background: #d1d11c;
+
+    color: #ffffb0;
+}
+
+
+.help-button:active {
+    transform: translateY(3px);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stat-row {
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #676700;
+
+    font-size: 17px;
+
+    font-weight: bold;
+}
+
+
+.stat-row strong {
+    color: #333300;
+
+    min-width: 55px;
+}
+
+
+/* =========================================================
+   SLIDE PIECES OPTION
+========================================================= */
+
+.slide-option {
+    margin-top: 5px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #454500;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+
+.slide-option input {
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+.custom-checkbox {
+    width: 30px;
+
+    height: 30px;
+
+    display: inline-block;
+
+    background: #eeeeaa;
+
+    border: 2px solid #777700;
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+
+.slide-option input:checked + .custom-checkbox {
+    background: #ffffd0;
+
+    border-color: #555500;
+}
+
+
+.slide-option input:checked + .custom-checkbox::after {
+    content: "";
+
+    position: absolute;
+
+    width: 10px;
+
+    height: 17px;
+
+    left: 8px;
+
+    top: 3px;
+
+    border-right: 4px solid #696900;
+
+    border-bottom: 4px solid #696900;
+
+    transform: rotate(45deg);
+}
+
+
+/* =========================================================
+   RIGHT PUZZLE PANEL
+========================================================= */
+
+.puzzle-panel {
+    min-width: 0;
+
+    position: relative;
+
+    background: #8d8d00;
+
+    border: 3px solid #d1d100;
+
+    padding: 14px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-shadow:
+        inset 0 0 0 5px #747400;
+}
+
+
+/* =========================================================
+   PUZZLE TITLE
+========================================================= */
+
+.puzzle-title {
+    width: 100%;
+
+    color: #ffffa0;
+
+    text-align: center;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 10px;
+
+    text-shadow:
+        1px 1px 0 #525200;
+}
+
+
+/* =========================================================
+   PUZZLE GRID
+========================================================= */
+
+.puzzle-grid {
+    width: min(100%, 720px);
+
+    aspect-ratio: 1 / 1;
+
+    display: grid;
+
+    gap: 2px;
+
+    padding: 3px;
+
+    background: #343400;
+
+    border: 4px solid #baba00;
+
+    box-shadow:
+        0 0 0 3px #575700;
+
+    user-select: none;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   PUZZLE PIECES
+========================================================= */
+
+.puzzle-piece {
+    min-width: 0;
+
+    min-height: 0;
+
+    position: relative;
+
+    background-color: #333;
+
+    background-repeat: no-repeat;
+
+    cursor: pointer;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    transition:
+        transform 0.12s,
+        filter 0.12s,
+        box-shadow 0.12s;
+
+    overflow: hidden;
+}
+
+
+.puzzle-piece:hover {
+    filter: brightness(1.12);
+
+    z-index: 2;
+
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 255, 120, 0.7);
+}
+
+
+.puzzle-piece:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================================
+   SELECTED PIECE
+========================================================= */
+
+.puzzle-piece.selected-piece {
+    z-index: 5;
+
+    box-shadow:
+        inset 0 0 0 5px #ffff00,
+        0 0 10px rgba(255, 255, 0, 0.75);
+
+    filter: brightness(1.2);
+}
+
+
+/* =========================================================
+   EMPTY SLIDING PIECE
+========================================================= */
+
+.puzzle-piece.empty-piece {
+    background: #555500;
+
+    border: 3px dashed #999900;
+
+    cursor: default;
+
+    box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.45);
+}
+
+.puzzle-piece.empty-piece:hover {
+    filter: none;
+
+    box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.45);
+}
+
+
+.puzzle-piece.empty-piece:hover {
+    filter: none;
+
+    box-shadow:
+        inset 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+
+/* =========================================================
+   INVALID MOVE
+========================================================= */
+
+.puzzle-piece.invalid-move {
+    animation: invalidMove 0.18s linear;
+}
+
+
+@keyframes invalidMove {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+
+/* =========================================================
+   PUZZLE COMPLETION EFFECT
+========================================================= */
+
+.puzzle-grid.puzzle-completed {
+    animation: completedPuzzle 1.2s ease;
+}
+
+
+@keyframes completedPuzzle {
+
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.025);
+    }
+
+    60% {
+        transform: scale(0.99);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================================
+   START MESSAGE
+========================================================= */
+
+.start-message {
+    position: absolute;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: min(420px, 80%);
+
+    padding: 22px;
+
+    background: rgba(65, 65, 0, 0.94);
+
+    border: 3px solid #cccc00;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    color: #ffffaa;
+
+    pointer-events: none;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.45);
+}
+
+
+.start-message-title {
+    font-size: 24px;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+
+.start-message-text {
+    font-size: 15px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   COMPLETION MESSAGE
+========================================================= */
+
+.completion-message {
+    position: absolute;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: min(400px, 80%);
+
+    padding: 28px;
+
+    background: rgba(70, 70, 0, 0.97);
+
+    border: 4px solid #e0e000;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    color: #ffffbb;
+
+    z-index: 20;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.65);
+}
+
+
+.completion-title {
+    font-size: 27px;
+
+    font-weight: bold;
+
+    margin-bottom: 20px;
+
+    color: #ffff75;
+}
+
+
+.completion-time,
+.completion-moves {
+    margin: 8px 0;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    color: #eeee9a;
+}
+
+
+.completion-time span,
+.completion-moves span {
+    color: #ffffff;
+}
+
+
+.play-again-button {
+    margin-top: 20px;
+
+    min-width: 180px;
+
+    height: 46px;
+
+    border: 2px solid #696900;
+
+    border-radius: 6px;
+
+    background: #dada00;
+
+    color: #555500;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 0 #666600;
+}
+
+
+.play-again-button:hover {
+    background: #eeee24;
+}
+
+
+.play-again-button:active {
+    transform: translateY(4px);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   HELP MODAL
+========================================================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.65);
+}
+
+
+.modal[hidden] {
+    display: none;
+}
+
+
+.modal-content {
+    width: min(500px, 95vw);
+
+    position: relative;
+
+    padding: 35px;
+
+    background: #888800;
+
+    border: 4px solid #d5d500;
+
+    border-radius: 15px;
+
+    color: #ffffc0;
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.7);
+}
+
+
+.modal-content h2 {
+    margin-bottom: 20px;
+
+    text-align: center;
+
+    color: #ffff80;
+
+    font-size: 27px;
+}
+
+
+.modal-content p {
+    margin-bottom: 14px;
+
+    line-height: 1.55;
+
+    font-size: 16px;
+
+    color: #ffffc4;
+}
+
+
+.close-modal {
+    position: absolute;
+
+    top: 8px;
+
+    right: 12px;
+
+    width: 35px;
+
+    height: 35px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #ffffaa;
+
+    font-size: 30px;
+
+    line-height: 30px;
+
+    cursor: pointer;
+}
+
+
+.close-modal:hover {
+    color: #ffffff;
+}
+
+
+.modal-button {
+    display: block;
+
+    margin: 25px auto 0;
+
+    min-width: 100px;
+
+    height: 40px;
+
+    border: 2px solid #686800;
+
+    border-radius: 5px;
+
+    background: #d4d400;
+
+    color: #555500;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+.modal-button:hover {
+    background: #eeee25;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.game-footer {
+    min-height: 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 35px;
+
+    color: #6dbce9;
+
+    background: #073b6d;
+
+    border-top: 3px solid #1e6092;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   BUTTON FOCUS
+========================================================= */
+
+button:focus-visible {
+    outline: 3px solid #ffff66;
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   DISABLED BUTTONS
+========================================================= */
+
+button:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .game-container {
+        grid-template-columns: 1fr;
+
+        padding: 20px;
+    }
+
+
+    .left-panel {
+        width: min(100%, 600px);
+
+        margin: 0 auto;
+    }
+
+
+    .puzzle-panel {
+        width: 100%;
+
+        min-height: auto;
+    }
+
+
+    .puzzle-grid {
+        width: min(90vw, 650px);
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .game-wrapper {
+        width: 100%;
+
+        min-height: 100vh;
+
+        margin: 0;
+
+        border: none;
+    }
+
+
+    .game-header {
+        height: 55px;
+
+        padding: 0 15px;
+    }
+
+
+    .brand {
+        font-size: 14px;
+
+        letter-spacing: 1px;
+    }
+
+
+    .header-right {
+        padding: 5px 12px;
+
+        font-size: 11px;
+    }
+
+
+    .game-container {
+        padding: 12px;
+
+        gap: 15px;
+    }
+
+
+    .preview-frame {
+        max-width: 100%;
+
+        aspect-ratio: 1 / 0.75;
+    }
+
+
+    .image-controls {
+        grid-template-columns:
+            1fr
+            1.1fr
+            1fr;
+
+        gap: 4px;
+    }
+
+
+    .image-controls button {
+        height: 43px;
+
+        font-size: 13px;
+    }
+
+
+    .play-button {
+        font-size: 17px !important;
+    }
+
+
+    .settings-panel {
+        grid-template-columns:
+            100px
+            1fr;
+    }
+
+
+    .size-option {
+        font-size: 16px;
+
+        min-height: 37px;
+    }
+
+
+    .settings-title {
+        font-size: 17px;
+    }
+
+
+    .game-information {
+        padding: 8px;
+    }
+
+
+    .stat-row {
+        font-size: 14px;
+    }
+
+
+    .slide-option {
+        font-size: 13px;
+    }
+
+
+    .custom-checkbox {
+        width: 25px;
+
+        height: 25px;
+    }
+
+
+    .puzzle-panel {
+        padding: 8px;
+
+        border-width: 2px;
+    }
+
+
+    .puzzle-grid {
+        width: 95vw;
+
+        border-width: 3px;
+
+        gap: 1px;
+    }
+
+
+    .puzzle-title {
+        font-size: 14px;
+
+        letter-spacing: 2px;
+    }
+
+
+    .game-footer {
+        min-height: 45px;
+
+        padding: 0 15px;
+
+        font-size: 11px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .settings-panel {
+        grid-template-columns:
+            85px
+            1fr;
+    }
+
+
+    .settings-title {
+        font-size: 15px;
+    }
+
+
+    .size-option {
+        font-size: 14px;
+
+        min-height: 34px;
+    }
+
+
+    .help-button {
+        width: 115px;
+
+        height: 33px;
+
+        font-size: 14px;
+    }
+
+
+    .stat-row {
+        font-size: 12px;
+    }
+
+
+    .slide-option {
+        font-size: 11px;
+
+        gap: 5px;
+    }
+
+
+    .custom-checkbox {
+        width: 22px;
+
+        height: 22px;
+    }
+
+
+    .image-controls button {
+        font-size: 11px;
+    }
+
+
+    .play-button {
+        font-size: 15px !important;
+    }
+
+}

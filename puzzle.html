@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Click N Slide - Puzzle</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="game-wrapper">
+
+        <!-- TOP BAR -->
+        <header class="game-header">
+
+            <div class="brand">
+                developed by Click N Slide
+            </div>
+
+            <div class="header-right">
+                Puzzle Game
+            </div>
+
+        </header>
+
+
+        <!-- MAIN GAME AREA -->
+        <main class="game-container">
+
+            <!-- LEFT SIDE -->
+            <section class="left-panel">
+
+                <!-- IMAGE PREVIEW -->
+                <div class="preview-container">
+
+                    <div class="preview-frame">
+                        <img
+                            id="previewImage"
+                            src=""
+                            alt="Puzzle image preview"
+                        >
+                    </div>
+
+                </div>
+
+
+                <!-- IMAGE CONTROLS -->
+                <div class="image-controls">
+
+                    <button
+                        id="prevButton"
+                        class="nav-button prev-button"
+                        type="button"
+                    >
+                        <span>◀</span>
+                        PREV
+                    </button>
+
+                    <button
+                        id="playButton"
+                        class="play-button"
+                        type="button"
+                    >
+                        PLAY
+                    </button>
+
+                    <button
+                        id="nextButton"
+                        class="nav-button next-button"
+                        type="button"
+                    >
+                        NEXT
+                        <span>▶</span>
+                    </button>
+
+                </div>
+
+
+                <!-- SIZE / INFORMATION PANEL -->
+                <div class="settings-panel">
+
+                    <div class="settings-title">
+                        SIZE
+                    </div>
+
+                    <div class="size-options">
+
+                        <button
+                            type="button"
+                            class="size-option active"
+                            data-size="3"
+                        >
+                            3×3
+                        </button>
+
+                        <button
+                            type="button"
+                            class="size-option"
+                            data-size="4"
+                        >
+                            4×4
+                        </button>
+
+                        <button
+                            type="button"
+                            class="size-option"
+                            data-size="5"
+                        >
+                            5×5
+                        </button>
+
+                        <button
+                            type="button"
+                            class="size-option"
+                            data-size="6"
+                        >
+                            6×6
+                        </button>
+
+                    </div>
+
+
+                    <div class="game-information">
+
+                        <button
+                            id="helpButton"
+                            class="help-button"
+                            type="button"
+                        >
+                            HELP
+                        </button>
+
+                        <div class="stat-row">
+                            <span>time:</span>
+                            <strong id="timeDisplay">00:00</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>complete:</span>
+                            <strong id="completeDisplay">0%</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>moves:</span>
+                            <strong id="movesDisplay">0</strong>
+                        </div>
+
+                        <label class="slide-option">
+                            <span>slide pieces</span>
+
+                            <input
+                                type="checkbox"
+                                id="slidePieces"
+                            >
+
+                            <span class="custom-checkbox"></span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RIGHT SIDE: PUZZLE -->
+            <section class="puzzle-panel">
+
+                <div class="puzzle-title">
+                    CLICK N SLIDE
+                </div>
+
+                <!--
+                    The puzzle grid is generated by script.js.
+
+                    puzzleGrid will contain the individual puzzle pieces.
+                -->
+                <div
+                    id="puzzleGrid"
+                    class="puzzle-grid"
+                    data-size="3"
+                    aria-label="Puzzle board"
+                >
+                </div>
+
+
+                <!-- START MESSAGE -->
+                <div
+                    id="startMessage"
+                    class="start-message"
+                >
+                    <div class="start-message-title">
+                        PUZZLE READY
+                    </div>
+
+                    <div class="start-message-text">
+                        Select an image and press PLAY to begin.
+                    </div>
+                </div>
+
+
+                <!-- COMPLETION MESSAGE -->
+                <div
+                    id="completionMessage"
+                    class="completion-message"
+                    hidden
+                >
+                    <div class="completion-title">
+                        PUZZLE COMPLETE!
+                    </div>
+
+                    <div class="completion-time">
+                        Time:
+                        <span id="finalTime">00:00</span>
+                    </div>
+
+                    <div class="completion-moves">
+                        Moves:
+                        <span id="finalMoves">0</span>
+                    </div>
+
+                    <button
+                        id="playAgainButton"
+                        class="play-again-button"
+                        type="button"
+                    >
+                        PLAY AGAIN
+                    </button>
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- FOOTER -->
+        <footer class="game-footer">
+
+            <div>
+                Click N Slide
+            </div>
+
+            <div>
+                Puzzle Game
+            </div>
+
+            <div>
+                v1.0
+            </div>
+
+        </footer>
+
+    </div>
+
+
+    <!-- HELP MODAL -->
+    <div
+        id="helpModal"
+        class="modal"
+        hidden
+    >
+
+        <div class="modal-content">
+
+            <button
+                id="closeHelpButton"
+                class="close-modal"
+                type="button"
+                aria-label="Close help"
+            >
+                ×
+            </button>
+
+            <h2>
+                HOW TO PLAY
+            </h2>
+
+            <p>
+                Choose a puzzle size and press PLAY to shuffle the image.
+            </p>
+
+            <p>
+                Move the pieces until the original image is reconstructed.
+            </p>
+
+            <p>
+                Use PREV and NEXT to select another image.
+            </p>
+
+            <p>
+                The game records your time and number of moves.
+            </p>
+
+            <button
+                id="closeHelpButtonBottom"
+                class="modal-button"
+                type="button"
+            >
+                OK
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!--
+        JavaScript game logic.
+        This file will be provided next.
+    -->
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "click-n-slide-puzzle",
+  "version": "1.0.0",
+  "description": "Click N Slide image puzzle game using Node.js, Express and SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "puzzle",
+    "game",
+    "click-n-slide",
+    "nodejs",
+    "express",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7"
+  }
+}
