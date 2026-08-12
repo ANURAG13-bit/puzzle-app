@@ -3,167 +3,331 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 
-const PORT = 3000;
-
-
-/* =========================================================
-   FOLDERS
-========================================================= */
-
 /*
-   Your puzzle images are currently stored here:
-
-       D:\puzzle image\
-
-   Windows paths are written with path.join() so that
-   backslashes do not cause problems.
+|--------------------------------------------------------------------------
+| PORT
+|--------------------------------------------------------------------------
+| Render provides process.env.PORT.
+| For local development, 3000 will be used.
+|--------------------------------------------------------------------------
 */
 
-const PUZZLE_IMAGE_FOLDER =
-    path.join('D:', 'puzzle image');
+const PORT = process.env.PORT || 3000;
 
 
 /*
-   This is the folder containing:
-
-       login.html
-       puzzle.html
-       style.css
-       script.js
-       server.js
-
-   If all of those files are in the same project folder,
-   __dirname is the correct location.
+|--------------------------------------------------------------------------
+| IMPORTANT DIRECTORIES
+|--------------------------------------------------------------------------
 */
 
-const PUBLIC_FOLDER =
-    __dirname;
+const ROOT_DIR = __dirname;
+
+const IMAGE_DIR =
+    path.join(ROOT_DIR, 'images');
+
+const DATABASE_FILE =
+    path.join(ROOT_DIR, 'database.db');
 
 
-/* =========================================================
-   MIDDLEWARE
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| CREATE EXPRESS APP
+|--------------------------------------------------------------------------
+*/
+
+app.use(express.json());
+
+app.use(express.urlencoded({
+    extended: true
+}));
+
+
+/*
+|--------------------------------------------------------------------------
+| STATIC FILES
+|--------------------------------------------------------------------------
+|
+| This serves:
+|
+| login.html
+| puzzle.html
+| script.js
+| style.css
+|
+*/
 
 app.use(
-    express.urlencoded({
-        extended: true
-    })
-);
-
-
-app.use(
-    express.json()
+    express.static(ROOT_DIR)
 );
 
 
 /*
-   Serve normal web files.
-
-   Examples:
-
-       /login.html
-       /puzzle.html
-       /style.css
-       /script.js
+|--------------------------------------------------------------------------
+| SERVE PUZZLE IMAGES
+|--------------------------------------------------------------------------
+|
+| Browser URL:
+|
+| /images/img1.jpg
+|
+| Server location:
+|
+| project/images/img1.jpg
+|
+|--------------------------------------------------------------------------
 */
 
 app.use(
-    express.static(PUBLIC_FOLDER)
+    '/images',
+    express.static(IMAGE_DIR)
 );
 
 
-/* =========================================================
-   CHECK IMAGE FOLDER
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| SQLITE DATABASE
+|--------------------------------------------------------------------------
+*/
 
-if (!fs.existsSync(PUZZLE_IMAGE_FOLDER)) {
+const db =
+    new sqlite3.Database(
+        DATABASE_FILE,
+        (error) => {
 
-    console.warn(
-        '\nWARNING: Puzzle image folder was not found:\n' +
-        PUZZLE_IMAGE_FOLDER +
-        '\n'
+            if (error) {
+
+                console.error(
+                    'SQLite database error:',
+                    error.message
+                );
+
+            } else {
+
+                console.log(
+                    'SQLite database connected.'
+                );
+
+            }
+
+        }
     );
 
-} else {
 
-    console.log(
-        'Puzzle image folder:',
-        PUZZLE_IMAGE_FOLDER
+/*
+|--------------------------------------------------------------------------
+| CREATE TABLES
+|--------------------------------------------------------------------------
+*/
+
+db.serialize(() => {
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS game_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            image_name TEXT,
+            puzzle_size INTEGER,
+            moves INTEGER,
+            time_seconds INTEGER,
+            completed INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| HOME PAGE
+|--------------------------------------------------------------------------
+*/
+
+app.get('/', (req, res) => {
+
+    res.sendFile(
+        path.join(
+            ROOT_DIR,
+            'login.html'
+        )
     );
 
-}
+});
 
-
-/* =========================================================
-   SERVE PUZZLE IMAGES
-========================================================= */
 
 /*
-   This makes:
-
-       D:\puzzle image\img 1.jpg
-
-   available to the browser as:
-
-       /puzzle-images/img%201.jpg
-
-   Express automatically handles the URL encoding.
+|--------------------------------------------------------------------------
+| LOGIN PAGE
+|--------------------------------------------------------------------------
 */
 
-app.use(
-    '/puzzle-images',
-    express.static(PUZZLE_IMAGE_FOLDER)
-);
+app.get('/login.html', (req, res) => {
 
+    res.sendFile(
+        path.join(
+            ROOT_DIR,
+            'login.html'
+        )
+    );
 
-/* =========================================================
-   GET PUZZLE IMAGES
-========================================================= */
+});
+
 
 /*
-   script.js calls:
-
-       GET /api/images
-
-   This endpoint searches the D:\puzzle image folder
-   and returns the available image files.
-
-   Supported formats:
-
-       .jpg
-       .jpeg
-       .png
-       .gif
-       .webp
+|--------------------------------------------------------------------------
+| PUZZLE PAGE
+|--------------------------------------------------------------------------
 */
 
-app.get(
-    '/api/images',
-    function (req, res) {
+app.get('/puzzle.html', (req, res) => {
 
-        try {
+    res.sendFile(
+        path.join(
+            ROOT_DIR,
+            'puzzle.html'
+        )
+    );
 
-            /*
-             * Check whether folder exists.
-             */
+});
 
-            if (
-                !fs.existsSync(
-                    PUZZLE_IMAGE_FOLDER
-                )
-            ) {
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN API
+|--------------------------------------------------------------------------
+|
+| Permanent credentials:
+|
+| Username: admin
+| Password: 1234
+|
+|--------------------------------------------------------------------------
+*/
+
+app.post('/api/login', (req, res) => {
+
+    const username =
+        String(
+            req.body.username || ''
+        ).trim();
+
+    const password =
+        String(
+            req.body.password || ''
+        );
+
+
+    /*
+     * Permanent admin credentials.
+     */
+
+    if (
+        username === 'admin' &&
+        password === '1234'
+    ) {
+
+        return res.json({
+
+            success: true,
+
+            message:
+                'Login successful.',
+
+            redirect:
+                '/puzzle.html'
+
+        });
+
+    }
+
+
+    /*
+     * Invalid credentials.
+     */
+
+    return res.status(401).json({
+
+        success: false,
+
+        message:
+            'Invalid username or password.'
+
+    });
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| GET PUZZLE IMAGES
+|--------------------------------------------------------------------------
+|
+| This is the API used by script.js:
+|
+| fetch('/api/images')
+|
+|--------------------------------------------------------------------------
+*/
+
+app.get('/api/images', (req, res) => {
+
+    /*
+     * Check whether the images folder exists.
+     */
+
+    if (
+        !fs.existsSync(IMAGE_DIR)
+    ) {
+
+        console.error(
+            'Images folder does not exist:',
+            IMAGE_DIR
+        );
+
+
+        return res.status(500).json({
+
+            success: false,
+
+            images: [],
+
+            error:
+                'Images folder not found. Create an "images" folder in the project and put JPG files inside it.'
+
+        });
+
+    }
+
+
+    /*
+     * Read files from images folder.
+     */
+
+    fs.readdir(
+        IMAGE_DIR,
+        (error, files) => {
+
+            if (error) {
+
+                console.error(
+                    'Could not read images folder:',
+                    error
+                );
+
 
                 return res.status(500).json({
 
                     success: false,
 
-                    message:
-                        'Puzzle image folder not found.',
+                    images: [],
 
-                    images: []
+                    error:
+                        'Could not read images folder.'
 
                 });
 
@@ -171,451 +335,164 @@ app.get(
 
 
             /*
-             * Read folder.
+             * Allowed image extensions.
              */
 
-            const files =
-                fs.readdirSync(
-                    PUZZLE_IMAGE_FOLDER,
-                    {
-                        withFileTypes: true
-                    }
-                );
+            const allowedExtensions = [
+
+                '.jpg',
+
+                '.jpeg',
+
+                '.png',
+
+                '.webp',
+
+                '.gif'
+
+            ];
 
 
             /*
-             * Only accept image files.
+             * Find image files only.
              */
 
             const imageFiles =
                 files
-
                     .filter(
-                        file =>
-                            file.isFile()
-                    )
+                        (file) => {
 
-                    .map(
-                        file =>
-                            file.name
-                    )
+                            const extension =
+                                path
+                                    .extname(file)
+                                    .toLowerCase();
 
-                    .filter(
-                        file =>
-                            isImageFile(file)
+
+                            return allowedExtensions
+                                .includes(
+                                    extension
+                                );
+
+                        }
+                    )
+                    .sort(
+                        (a, b) =>
+                            a.localeCompare(
+                                b,
+                                undefined,
+                                {
+                                    numeric: true,
+                                    sensitivity: 'base'
+                                }
+                            )
                     );
 
 
             /*
-             * Sort naturally.
-
-             * This means:
-
-                   img 1.jpg
-                   img 2.jpg
-                   img 3.jpg
-                   img 10.jpg
-
-               instead of:
-
-                   img 1.jpg
-                   img 10.jpg
-                   img 2.jpg
-                   img 3.jpg
-             */
-
-            imageFiles.sort(
-                naturalSort
-            );
-
-
-            /*
              * Convert filenames into URLs.
-
-               encodeURIComponent() is important because
-               your filenames contain spaces.
-
-               Example:
-
-                   img 1.jpg
-
-               becomes:
-
-                   img%201.jpg
+             *
+             * encodeURIComponent is important
+             * if filenames contain spaces.
              */
 
             const imageUrls =
                 imageFiles.map(
-                    file =>
-                        '/puzzle-images/' +
-                        encodeURIComponent(file)
+                    (file) => {
+
+                        return (
+                            '/images/' +
+                            encodeURIComponent(file)
+                        );
+
+                    }
                 );
 
 
             console.log(
-                'Puzzle images:',
+                'Images found:',
                 imageFiles
             );
 
 
             /*
-             * Send response.
+             * Send result to browser.
              */
 
-            res.json({
+            return res.json({
 
                 success: true,
 
-                images: imageUrls,
-
-                count: imageUrls.length
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                'Error reading puzzle images:',
-                error
-            );
-
-
-            res.status(500).json({
-
-                success: false,
-
-                message:
-                    'Could not read puzzle images.',
-
-                images: []
+                images:
+                    imageUrls
 
             });
 
         }
+    );
 
-    }
-);
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-/*
-   Permanent login credentials requested:
-
-       Username: admin
-       Password: 1234
-
-   There is NO registration system.
-
-   This is deliberately kept server-side instead of
-   putting the password into login.html or script.js.
-*/
-
-const ADMIN_USERNAME =
-    'admin';
-
-const ADMIN_PASSWORD =
-    '1234';
+});
 
 
 /*
-   Login endpoint.
-
-   login.html should submit:
-
-       POST /login
-
-   with:
-
-       username
-       password
+|--------------------------------------------------------------------------
+| DEBUG IMAGE INFORMATION
+|--------------------------------------------------------------------------
+|
+| Open:
+|
+| /api/images/debug
+|
+| This helps diagnose Render problems.
+|--------------------------------------------------------------------------
 */
 
-app.post(
-    '/login',
-    function (req, res) {
+app.get(
+    '/api/images/debug',
+    (req, res) => {
 
-        const username =
-            String(
-                req.body.username || ''
-            ).trim();
-
-
-        const password =
-            String(
-                req.body.password || ''
+        const folderExists =
+            fs.existsSync(
+                IMAGE_DIR
             );
 
 
-        /*
-         * Check permanent credentials.
-         */
+        let files = [];
 
-        if (
-            username === ADMIN_USERNAME &&
-            password === ADMIN_PASSWORD
-        ) {
 
-            /*
-             * Login successful.
+        if (folderExists) {
 
-             * For the simple version of this application,
-             * redirect directly to the puzzle.
-             */
+            try {
 
-            return res.redirect(
-                '/puzzle.html'
-            );
+                files =
+                    fs.readdirSync(
+                        IMAGE_DIR
+                    );
+
+            } catch (error) {
+
+                files = [
+                    'ERROR: ' +
+                    error.message
+                ];
+
+            }
 
         }
 
 
-        /*
-         * Login failed.
-         */
+        res.json({
 
-        return res.status(401).send(`
-<!DOCTYPE html>
+            projectDirectory:
+                ROOT_DIR,
 
-<html lang="en">
+            imageDirectory:
+                IMAGE_DIR,
 
-<head>
+            imageFolderExists:
+                folderExists,
 
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Login Failed</title>
-
-    <style>
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #073b6d;
-
-            font-family: Arial, Helvetica, sans-serif;
-
-            color: white;
-        }
-
-        .error-box {
-            width: min(400px, 90vw);
-
-            padding: 35px;
-
-            text-align: center;
-
-            background: #777700;
-
-            border: 3px solid #d5d500;
-
-            border-radius: 12px;
-
-            box-shadow:
-                0 10px 30px rgba(0,0,0,.5);
-        }
-
-        h2 {
-            color: #ffff80;
-        }
-
-        p {
-            color: #ffffc0;
-        }
-
-        a {
-            display: inline-block;
-
-            margin-top: 15px;
-
-            padding: 10px 25px;
-
-            background: #d5d500;
-
-            color: #555500;
-
-            text-decoration: none;
-
-            font-weight: bold;
-
-            border-radius: 5px;
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-    <div class="error-box">
-
-        <h2>Login Failed</h2>
-
-        <p>
-            Incorrect username or password.
-        </p>
-
-        <a href="/login.html">
-            Try Again
-        </a>
-
-    </div>
-
-</body>
-
-</html>
-`);
-
-    }
-);
-
-
-/* =========================================================
-   ROOT PAGE
-========================================================= */
-
-app.get(
-    '/',
-    function (req, res) {
-
-        res.sendFile(
-            path.join(
-                PUBLIC_FOLDER,
-                'login.html'
-            )
-        );
-
-    }
-);
-
-
-/* =========================================================
-   PUZZLE PAGE
-========================================================= */
-
-app.get(
-    '/puzzle',
-    function (req, res) {
-
-        res.sendFile(
-            path.join(
-                PUBLIC_FOLDER,
-                'puzzle.html'
-            )
-        );
-
-    }
-);
-
-
-/* =========================================================
-   404 HANDLER
-========================================================= */
-
-app.use(
-    function (req, res) {
-
-        res.status(404).send(`
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>Page Not Found</title>
-
-    <style>
-
-        body {
-            margin: 0;
-
-            min-height: 100vh;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            background: #073b6d;
-
-            font-family: Arial, sans-serif;
-
-            color: white;
-
-            text-align: center;
-        }
-
-        h1 {
-            color: #ffff70;
-        }
-
-        a {
-            color: #65c3f2;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-    <div>
-
-        <h1>404</h1>
-
-        <p>
-            The requested page was not found.
-        </p>
-
-        <a href="/login.html">
-            Back to Login
-        </a>
-
-    </div>
-
-</body>
-
-</html>
-`);
-
-    }
-);
-
-
-/* =========================================================
-   ERROR HANDLER
-========================================================= */
-
-app.use(
-    function (error, req, res, next) {
-
-        console.error(
-            'Server error:',
-            error
-        );
-
-
-        res.status(500).json({
-
-            success: false,
-
-            message:
-                'Internal server error.'
+            files:
+                files
 
         });
 
@@ -623,92 +500,383 @@ app.use(
 );
 
 
-/* =========================================================
-   IMAGE FILE CHECK
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| SAVE GAME RESULT
+|--------------------------------------------------------------------------
+*/
 
-function isImageFile(
-    filename
-) {
+app.post('/api/game-result', (req, res) => {
 
-    const extension =
-        path.extname(
-            filename
-        ).toLowerCase();
-
-
-    return [
-        '.jpg',
-        '.jpeg',
-        '.png',
-        '.gif',
-        '.webp'
-    ].includes(
-        extension
-    );
-
-}
+    const username =
+        String(
+            req.body.username || 'admin'
+        ).trim();
 
 
-/* =========================================================
-   NATURAL SORT
-========================================================= */
+    const imageName =
+        String(
+            req.body.image_name || ''
+        );
 
-function naturalSort(
-    a,
-    b
-) {
 
-    return a.localeCompare(
-        b,
-        undefined,
-        {
-            numeric: true,
-            sensitivity: 'base'
+    const puzzleSize =
+        Number(
+            req.body.puzzle_size || 3
+        );
+
+
+    const moves =
+        Number(
+            req.body.moves || 0
+        );
+
+
+    const timeSeconds =
+        Number(
+            req.body.time_seconds || 0
+        );
+
+
+    const completed =
+        req.body.completed ? 1 : 0;
+
+
+    /*
+     * Basic validation.
+     */
+
+    if (
+        !Number.isInteger(puzzleSize) ||
+        puzzleSize < 3 ||
+        puzzleSize > 6
+    ) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                'Invalid puzzle size.'
+
+        });
+
+    }
+
+
+    db.run(
+        `
+        INSERT INTO game_results
+        (
+            username,
+            image_name,
+            puzzle_size,
+            moves,
+            time_seconds,
+            completed
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        `,
+        [
+            username,
+            imageName,
+            puzzleSize,
+            moves,
+            timeSeconds,
+            completed
+        ],
+        function (error) {
+
+            if (error) {
+
+                console.error(
+                    'Database insert error:',
+                    error.message
+                );
+
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message:
+                        'Could not save game result.'
+
+                });
+
+            }
+
+
+            return res.json({
+
+                success: true,
+
+                id:
+                    this.lastID,
+
+                message:
+                    'Game result saved.'
+
+            });
+
         }
     );
 
-}
+});
 
 
-/* =========================================================
-   START SERVER
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| GET GAME RESULTS
+|--------------------------------------------------------------------------
+|
+| Useful for checking whether SQLite is working.
+|--------------------------------------------------------------------------
+*/
+
+app.get('/api/game-results', (req, res) => {
+
+    db.all(
+        `
+        SELECT
+            id,
+            username,
+            image_name,
+            puzzle_size,
+            moves,
+            time_seconds,
+            completed,
+            created_at
+        FROM game_results
+        ORDER BY id DESC
+        `,
+        [],
+        (error, rows) => {
+
+            if (error) {
+
+                console.error(
+                    'Database read error:',
+                    error.message
+                );
+
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    results: []
+
+                });
+
+            }
+
+
+            return res.json({
+
+                success: true,
+
+                results:
+                    rows
+
+            });
+
+        }
+    );
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| HEALTH CHECK
+|--------------------------------------------------------------------------
+|
+| Render can use this to verify the server is alive.
+|--------------------------------------------------------------------------
+*/
+
+app.get('/api/health', (req, res) => {
+
+    res.json({
+
+        success: true,
+
+        message:
+            'Click N Slide server is running.',
+
+        port:
+            PORT,
+
+        imagesFolder:
+            fs.existsSync(IMAGE_DIR)
+
+    });
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 404 HANDLER
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+    (req, res) => {
+
+        res.status(404).send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>404 - Page Not Found</title>
+
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                        padding: 60px;
+                    }
+
+                    h1 {
+                        font-size: 48px;
+                    }
+                </style>
+            </head>
+
+            <body>
+
+                <h1>404</h1>
+
+                <p>
+                    The requested page was not found.
+                </p>
+
+                <p>
+                    <a href="/">
+                        Go to Login
+                    </a>
+                </p>
+
+            </body>
+            </html>
+        `);
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| START SERVER
+|--------------------------------------------------------------------------
+|
+| IMPORTANT FOR RENDER:
+|
+| - process.env.PORT
+| - 0.0.0.0
+|
+|--------------------------------------------------------------------------
+*/
 
 app.listen(
     PORT,
-    function () {
+    '0.0.0.0',
+    () => {
 
         console.log(
-            '\n=========================================='
+            '========================================'
         );
 
         console.log(
-            '       CLICK N SLIDE PUZZLE'
+            'CLICK N SLIDE SERVER'
         );
 
         console.log(
-            '=========================================='
+            '========================================'
         );
 
         console.log(
-            `Server running at: http://localhost:${PORT}`
+            `Server running on port: ${PORT}`
         );
 
         console.log(
-            `Login page: http://localhost:${PORT}/login.html`
+            `Project directory: ${ROOT_DIR}`
         );
 
         console.log(
-            `Puzzle page: http://localhost:${PORT}/puzzle.html`
+            `Images directory: ${IMAGE_DIR}`
         );
 
-        console.log(
-            `Images: ${PUZZLE_IMAGE_FOLDER}`
-        );
+
+        if (
+            fs.existsSync(IMAGE_DIR)
+        ) {
+
+            const files =
+                fs.readdirSync(
+                    IMAGE_DIR
+                );
+
+
+            console.log(
+                'Images folder found.'
+            );
+
+            console.log(
+                'Files:',
+                files
+            );
+
+        } else {
+
+            console.error(
+                'WARNING: images folder NOT FOUND!'
+            );
+
+            console.error(
+                'Create: ' +
+                IMAGE_DIR
+            );
+
+        }
 
         console.log(
-            '==========================================\n'
+            '========================================'
+        );
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| HANDLE DATABASE CLOSE
+|--------------------------------------------------------------------------
+*/
+
+process.on(
+    'SIGINT',
+    () => {
+
+        console.log(
+            'Closing database...'
+        );
+
+
+        db.close(
+            () => {
+
+                console.log(
+                    'Database closed.'
+                );
+
+
+                process.exit(
+                    0
+                );
+
+            }
         );
 
     }
