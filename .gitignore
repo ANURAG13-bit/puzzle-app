@@ -1,4 +1,6 @@
 node_modules/
 database.db
-*.db
+database.db-journal
+npm-debug.log*
 .env
+.DS_Store
